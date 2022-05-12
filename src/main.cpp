@@ -70,17 +70,17 @@ void loop()
 
   delay(delay1);
 
-  // Read accelerometer and gyroscope.
+  // Read accelerometer and gyroscope
   int32_t accelerometer[3];
   int32_t gyroscope[3];
   AccGyr->Get_X_Axes(accelerometer);
   AccGyr->Get_G_Axes(gyroscope);
 
-  //Read accelerometer
+  // Read accelerometer
   int32_t accelerometer2[3];
   Acc2->Get_X_Axes(accelerometer2);
 
-  //Read magnetometer
+  // Read magnetometer
   int32_t magnetometer[3];
   Mag->GetAxes(magnetometer);
 
@@ -91,7 +91,7 @@ void loop()
   acc_y = accelerometer[1] * 1000 / 9.81;
   acc_z = accelerometer[2] * 1000 / 9.81;
   // Sensorwerte Gyroscope in float
-  gyr_x = gyroscope[0] * 1000 / 360 * 2 * PI; //mdps to rad/s
+  gyr_x = gyroscope[0] * 1000 / 360 * 2 * PI; // mdps to rad/s
   gyr_y = gyroscope[1] * 1000 / 360 * 2 * PI;
   gyr_z = gyroscope[2] * 1000 / 360 * 2 * PI;
 
