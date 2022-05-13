@@ -102,7 +102,7 @@ void loop()
   //*********************************************************************************
   // Serial Output für Visualisierung am PC
   //*********************************************************************************
-  // Output data.
+  // Output data
   SerialPort.print(accelerometer[0]); // Acc[mg] [0]
   SerialPort.print(",");
   SerialPort.print(accelerometer[1]); // Acc[mg] [1]
