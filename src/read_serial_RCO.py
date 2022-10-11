@@ -1,3 +1,5 @@
+# Francois Fust 11.10.2022
+
 from vpython import *
 from time import *
 import numpy as np
