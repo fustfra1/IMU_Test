@@ -80,6 +80,7 @@ myObj = stl_to_triangles('RCO_Logo_3D.stl')
 # myObj.size *= 200
 myObj.pos = vec(-20, 0, 0)
 
+'''
 # ---Plotten---
 # Create figure for plotting
 fig = plt.figure()
@@ -122,3 +123,36 @@ def animate(i, xs, ys):
 ani = animation.FuncAnimation(
     fig, animate, fargs=(xs, ys), interval=100)
 plt.show()
+
+'''
+
+while(1):
+
+    # Wait until there is data waiting in the serial buffer
+    if(serialPort.in_waiting > 0):
+
+        # Read data out of the buffer until a carraige return / new line is found
+        serialString = serialPort.readline()
+        serialString = str(serialString, 'utf-8')
+        splitPacket = serialString.split(",")
+
+        roll = float(splitPacket[12])*toRad
+        pitch = float(splitPacket[13])*toRad
+        yaw = 0*toRad+np.pi
+
+        print("Roll=", roll*toDeg, " Pitch=", pitch*toDeg, "Yaw=", yaw*toDeg)
+        rate(50)
+        k = vector(cos(yaw)*cos(pitch), sin(pitch), sin(yaw)*cos(pitch))
+        y = vector(0, 1, 0)
+        s = cross(k, y)
+        v = cross(s, k)
+        vrot = v*cos(roll)+cross(k, v)*sin(roll)
+
+        frontArrow.axis = k
+        sideArrow.axis = cross(k, vrot)
+        upArrow.axis = vrot
+        myObj.axis = k
+        myObj.up = vrot
+        sideArrow.length = 2
+        frontArrow.length = 4
+        upArrow.length = 1

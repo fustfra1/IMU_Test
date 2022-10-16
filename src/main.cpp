@@ -35,8 +35,8 @@ LIS2MDLSensor *Mag;
 
 // Variablen
 int delay1 = 50;
-float delay2 = 50;
-float tau1 = 1000;
+float delay2 = static_cast<float>(delay1) / 1000; // s
+float tau1 = 0.3;                                 // s
 
 // Class CompSixAxis global erstellen (Funktioniert nicht im void setup() bei Arduino)
 CompSixAxis CompSixAxis1(delay2, tau1);
@@ -61,8 +61,8 @@ void setup()
   Mag = new LIS2MDLSensor(&DEV_I2C);
   Mag->Enable();
 
-  CompSixAxis1.CompAccelUpdate(0, 0, 0);
-  CompSixAxis1.CompStart();
+  //  CompSixAxis1.CompAccelUpdate(0, 0, 0);
+  //  CompSixAxis1.CompStart();
 }
 
 void loop()
@@ -84,20 +84,21 @@ void loop()
   int32_t magnetometer[3];
   Mag->GetAxes(magnetometer);
 
-  float acc_x, acc_y, acc_z, gyr_x, gyr_y, gyr_z;
+  float acc_x, acc_y, acc_z, gyr_x, gyr_y, gyr_z, AngXout, AngYout;
 
   // Sensorwerte Accelerometer in float
-  acc_x = accelerometer[0] * 1000 / 9.81; // mg to m/s^2
-  acc_y = accelerometer[1] * 1000 / 9.81;
-  acc_z = accelerometer[2] * 1000 / 9.81;
+  acc_x = static_cast<float>(accelerometer[0]) / 1000 * 9.81; // mg to m/s^2
+  acc_y = static_cast<float>(accelerometer[1]) / 1000 * 9.81;
+  acc_z = static_cast<float>(accelerometer[2]) / 1000 * 9.81;
   // Sensorwerte Gyroscope in float
-  gyr_x = gyroscope[0] * 1000 / 360 * 2 * PI; // mdps to rad/s
-  gyr_y = gyroscope[1] * 1000 / 360 * 2 * PI;
-  gyr_z = gyroscope[2] * 1000 / 360 * 2 * PI;
+  gyr_x = static_cast<float>(gyroscope[0]) / 1000 / 360 * 2 * PI; // mdps to rad/s
+  gyr_y = static_cast<float>(gyroscope[1]) / 1000 / 360 * 2 * PI;
+  gyr_z = static_cast<float>(gyroscope[2]) / 1000 / 360 * 2 * PI;
 
   CompSixAxis1.CompAccelUpdate(acc_x, acc_y, acc_z);
   CompSixAxis1.CompGyroUpdate(gyr_x, gyr_y, gyr_z);
   CompSixAxis1.CompUpdate();
+  CompSixAxis1.CompAnglesGet(&AngXout, &AngYout);
 
   //*********************************************************************************
   // Serial Output für Visualisierung am PC
@@ -115,21 +116,22 @@ void loop()
   SerialPort.print(",");
   SerialPort.print(gyroscope[2]); // Gyr[mdps] [2]
   SerialPort.print(",");
-  SerialPort.print(accelerometer2[0]); // Acc2[mg] [0]
+  // Umgewandelte Werte
+  SerialPort.print(acc_x);
   SerialPort.print(",");
-  SerialPort.print(accelerometer2[1]); // Acc2[mg] [1]
+  SerialPort.print(acc_y);
   SerialPort.print(",");
-  SerialPort.print(accelerometer2[2]); // Acc2[mg] [2]
+  SerialPort.print(acc_z);
   SerialPort.print(",");
-  SerialPort.print(magnetometer[0]); // Mag[mGauss] [0]
+  SerialPort.print(gyr_x);
   SerialPort.print(",");
-  SerialPort.print(magnetometer[1]); // Mag[mGauss] [1]
+  SerialPort.print(gyr_y);
   SerialPort.print(",");
-  SerialPort.print(magnetometer[2]); // Mag[mGauss] [2]
+  SerialPort.print(gyr_z);
   // Roll / Pitch
   SerialPort.print(",");
-  SerialPort.print(CompSixAxis1.compAngleX / 2 / PI * 360);
+  SerialPort.print(AngXout / 2 / PI * 360);
   SerialPort.print(",");
-  SerialPort.print(CompSixAxis1.compAngleY / 2 / PI * 360);
+  SerialPort.print(AngYout / 2 / PI * 360);
   SerialPort.print("\r\n"); // new line und carriage return
 }
